@@ -1,0 +1,26 @@
+# Set base image (host OS)
+FROM python:3.12-alpine
+
+# By default, listen on port 5000
+EXPOSE 6000/tcp
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the dependencies file to the working directory
+COPY requirements.txt .
+
+# Install any dependencies
+RUN pip install -r requirements.txt
+
+# Copy the content of the local src directory to the working directory
+COPY app.py .
+
+# Copy the react app code
+COPY /ui/dist /app/ui/dist
+COPY /ui/public /app/ui/public
+
+RUN pip install gunicorn
+
+# Specify the command to run on container start
+CMD [ "gunicorn", "-b", "0.0.0.0:8000", "app:app" ]
